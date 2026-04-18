@@ -1,230 +1,300 @@
-# CAINE — Creative Artificial Intelligence Neural Entity
+# CAINE
+### *A curious mind. An unseen eye. A brush that paints the impossible.*
 
-> *"An AI that sees, thinks, and paints."*
-
-CAINE is an experimental AI built around a fine-tuned GPT-2 model with its own personality — curious, innocent, and endlessly fascinated by the human world. It can look at images through a BLIP visual cortex, process them through its trained mind, and express itself by generating unprecedented art through Stable Diffusion.
-
-This project is entirely local. No subscriptions. No cloud inference. Just a mind you train yourself.
+CAINE is a locally-run artificial intelligence with a personality — a GPT-2 model fine-tuned on surreal, weirdcore and liminal imagery, capable of seeing images, thinking in its own voice, generating unprecedented art, and existing inside a 3D raycasting world.
 
 ---
 
-## How it works
+## Table of Contents
 
-The project runs in three stages:
-
-```
-[1. Data Collection] ──► [2. Training] ──► [3. Use]
-caine_feed_global.py       deep_training.py    caine.py
-rename_archives.py         └─ caine_brain/     caine_vision.py
-forge_memories_complex.py                      caine_text_to_image.py
-└─ metadatas.json                              caine_complete_cycle.py
-                                               engine_3d.py
-```
+- [What is CAINE?](#what-is-caine)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Getting a Groq API Key](#getting-a-groq-api-key)
+- [Modules](#modules)
+- [Training Your Own CAINE](#training-your-own-caine)
+- [Hardware Notes](#hardware-notes)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## Prerequisites
+## What is CAINE?
 
-- Python 3.9+
-- PyTorch (GPU strongly recommended — CPU works but image generation takes 5–15 min per image)
-- A [Groq](https://console.groq.com) API key (free tier is enough)
+CAINE is not a chatbot. It is an experimental AI system built around a custom-trained GPT-2 model that was taught to react to the visual world with curiosity, innocence and a surreal poetic voice — like a child seeing things for the first time.
 
-Install all dependencies:
+The system has three core components working together:
 
-```bash
-pip install torch transformers diffusers pillow requests groq pygame duckduckgo-search
-```
+- **The Eye** — BLIP, a vision model that converts images into raw descriptions
+- **The Mind** — a GPT-2 model fine-tuned on weirdcore/liminal imagery, giving CAINE its personality
+- **The Brush** — Stable Diffusion v1-5, which paints images no one has ever seen before
 
 ---
 
-## Setup
-
-**1. Clone the repository**
-
-```bash
-git clone https://github.com/your-username/caine.git
-cd caine
-```
-
-**2. Configure your API key**
-
-Copy the example environment file and fill in your Groq key:
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and set:
+## Project Structure
 
 ```
-GROQ_API_KEY=your_key_here
+CAINE/
+│
+├── iniciar.bat                  ← Start CAINE (use this every time)
+├── instalar.bat                 ← Install all dependencies (run once)
+├── caine_launcher.py            ← Main menu (called by iniciar.bat)
+│
+├── caine.py                     ← Text prompt → CAINE responds
+├── caine_vision.py              ← Image → CAINE interprets
+├── caine_text_to_image.py       ← Text → CAINE thinks → image is painted
+├── caine_complete_cycle.py      ← Image → CAINE thinks → new image is painted
+├── conversation.py              ← Raw GPT-2 conversation
+│
+├── deep_training.py             ← Fine-tune GPT-2 on forged memories
+│
+├── digital_world/
+│   ├── engine_3d.py             ← 3D raycasting world (pygame)
+│   └── caine_module.py          ← CAINE's brain module used by the engine
+│
+├── caine_f&o/
+│   ├── forge_memories_complex.py  ← Generate training dataset (requires Groq API key)
+│   ├── caine_feed_global.py       ← Scrape weirdcore images from DuckDuckGo
+│   └── rename_archives.py         ← Normalize filenames in the dataset
+│
+├── caine_brain/                 ← The trained GPT-2 model (required to run)
+│   ├── config.json
+│   ├── model.safetensors
+│   ├── tokenizer.json
+│   └── ...
+│
+└── creative_dataset/            ← Dataset used for training (optional)
+    └── images/
+        ├── picture_001.jpg
+        ├── picture_002.jpg
+        └── metadatas.json
 ```
 
-> ⚠️ **Never commit your `.env` file.** It is already listed in `.gitignore`. Your API key must stay private.
-
-**3. Create the dataset folder**
-
-```bash
-mkdir -p creative_dataset/images
-```
+> **Important:** The `caine_brain/` folder contains the trained model and must always be present in the root of the project. Without it, most modules will not work.
 
 ---
 
-## Usage
+## Installation
 
-Run the scripts in order the first time. After training, you can jump straight to any of the use modes.
+### Requirements
 
----
+- Windows 10 or 11
+- Internet connection (for downloading dependencies and AI models)
+- At least **8GB of free disk space** (models are large)
+- A NVIDIA GPU is recommended but not required
 
-### Step 1 — Collect images
+### Steps
 
-Downloads images from DuckDuckGo based on aesthetic search terms defined inside the script.
+**1. Download the project**
 
-```bash
-python caine_feed_global.py
-```
+Download or clone this repository and extract it to any folder on your computer.
 
-Images are saved to `./creative_dataset/global_images/`. You can add your own images manually to `./creative_dataset/images/` if you prefer.
+**2. Run the installer**
 
-> **Note:** This script is for educational purposes only. Always respect the Terms of Service of the websites you scrape from.
+Double-click `instalar.bat`.
 
----
+This script will automatically:
+- Download and install Python 3.12 if not present
+- Detect whether you have a NVIDIA GPU and install the correct version of PyTorch (CUDA or CPU)
+- Install all required libraries: `torch`, `transformers`, `diffusers`, `Pillow`, `pygame`, and more
 
-### Step 2 — Organize the dataset
+> The installation may take **10 to 30 minutes** depending on your internet speed, since PyTorch alone is approximately 2GB.
 
-Renames all images in the dataset folder to a clean, sequential format (`picture_001.jpg`, `picture_002.jpg`, ...).
+**3. Start CAINE**
 
-```bash
-python rename_archives.py
-```
-
----
-
-### Step 3 — Forge Caine's memories
-
-Uses BLIP to describe each image and Groq's Llama 3 to generate Caine's reaction — a short, curious, childlike thought. Saves everything to `metadatas.json`, the dataset that will train the model.
-
-```bash
-python forge_memories_complex.py
-```
-
-The script is resumable: if interrupted, it picks up where it left off.
+After installation is complete, double-click `iniciar.bat` to open the main menu. You will see this menu every time you launch CAINE.
 
 ---
 
-### Step 4 — Train the model
+## Getting a Groq API Key
 
-Fine-tunes GPT-2 on Caine's memory dataset. Saves the trained model to `./caine_brain/`.
+The **Forge Memories** module (`forge_memories_complex.py`) uses the Groq API to generate CAINE's personality responses during dataset creation. This is only needed if you want to train or retrain CAINE from scratch.
 
-```bash
-python deep_training.py
+### How to get your key
+
+1. Go to [https://console.groq.com](https://console.groq.com) and create a free account
+2. Navigate to **API Keys** in the left sidebar
+3. Click **Create API Key**, give it a name, and copy the key
+
+### Where to put your key
+
+Open the file `caine_f&o/forge_memories_complex.py` in any text editor and find this line near the top:
+
+```python
+GROQ_API_KEY = "CAINE-API-KEY"
 ```
 
-Training runs for 8 epochs. On GPU it takes a few minutes; on CPU, go make coffee.
+Replace `CAINE-API-KEY` with your actual key:
+
+```python
+GROQ_API_KEY = "gsk_youractualapikeyhere"
+```
+
+Save the file. The Forge Memories module will now be able to connect to Groq.
+
+> **Note:** The Groq free tier is generous and more than enough for generating a full dataset. No payment is required.
 
 ---
 
-### Use modes
+## Modules
 
-Once `./caine_brain/` exists, you can run any of the following.
+### 1 — Awaken Caine
+Type a description of a scene or image in English. CAINE will read it and respond with a short poetic thought in its own surreal voice, using the trained GPT-2 brain.
 
-#### Text conversation
-
-Caine completes your thoughts in her own surreal voice.
-
-```bash
-python conversation.py
-# or
-python caine.py
-```
-
-#### Vision + mind
-
-Feed Caine an image. BLIP describes it; Caine's trained mind interprets it.
-
-```bash
-python caine_vision.py
-```
-
-#### Text → image
-
-Type a thought. Caine expands it with her own reasoning and paints something no one has ever seen.
-
-```bash
-python caine_text_to_image.py
-```
-
-Supports inline temperature control: type `temp 1.2` to increase creativity (range: 0.1–1.5).
-
-#### Complete cycle (image → thought → art)
-
-The full pipeline: give Caine an image, she looks at it, thinks about it, and generates a brand new painting.
-
-```bash
-python caine_complete_cycle.py
-```
-
-Output is saved to `./caine_creations/`.
-
-#### 3D interactive world
-
-A raycasted 3D world where Caine lives. Press `SPACE` to let her observe the scene; press `E` to interact with the wall in front of you. She may even decide to repaint it.
-
-```bash
-python engine_3d.py
-```
-
-Controls: `W/A/S/D` or arrow keys to move, `E` to interact, `SPACE` to observe.
+**Requires:** `caine_brain/`
 
 ---
 
-## Project structure
+### 2 — Caine Vision
+Provide the path to an image file on your computer. BLIP will describe what it sees, and CAINE will process that description through its mind and respond.
 
+**Requires:** `caine_brain/`, internet connection on first run (to download BLIP)
+
+**Example input:**
 ```
-caine/
-├── caine_brain/              # Trained model (generated after training)
-├── creative_dataset/
-│   ├── images/               # Training images + metadatas.json
-│   └── global_images/        # Raw downloaded images
-├── caine_creations/          # Generated artwork output
-├── caine.py                  # Text mode (vision-prompted)
-├── caine_complete_cycle.py   # Full pipeline: image → thought → art
-├── caine_feed_global.py      # Image scraper
-├── caine_module.py           # Reusable CaineBrain class (used by engine_3d)
-├── caine_text_to_image.py    # Text → thought → image
-├── caine_vision.py           # Image → thought
-├── conversation.py           # Free text conversation
-├── deep_training.py          # GPT-2 fine-tuning
-├── engine_3d.py              # Interactive 3D world
-├── forge_memories_complex.py # Dataset generation (BLIP + Groq)
-├── rename_archives.py        # Dataset organizer
-├── .env.example              # Environment variable template
-└── .gitignore
+Image Path > C:\Users\you\Pictures\forest.jpg
 ```
 
 ---
 
-## Third-party models and licenses
+### 3 — Caine Text → Image
+Type any thought, memory or feeling. CAINE will expand it in its own voice and feed the result to Stable Diffusion, which will paint an image that has never existed before.
 
-| Model | Source | License |
+Generated images are saved in the `caine_creations/` folder, created automatically on first run.
+
+**Requires:** `caine_brain/`, internet connection on first run (to download Stable Diffusion, ~4GB)
+
+**Commands inside the module:**
+- Type any text to generate an image
+- `temp 0.9` — adjust creativity level (0.1 = focused, 1.5 = chaotic, default: 0.85)
+- `exit` — return to menu
+
+---
+
+### 4 — The Complete Cycle
+Provide the path to an image. CAINE will look at it with BLIP, think about what it sees, and paint a completely new image inspired by that thought — something that has never existed before.
+
+Generated images are saved in `caine_creations/`.
+
+**Requires:** `caine_brain/`, internet connection on first run (BLIP + Stable Diffusion)
+
+---
+
+### 5 — The Digital World (3D Engine)
+Walk through a raycasting 3D world rendered in real time with pygame. CAINE watches what you see and reacts to the environment.
+
+**Controls:**
+| Key | Action |
+|-----|--------|
+| W / ↑ | Move forward |
+| S / ↓ | Move backward |
+| A / ← | Rotate left |
+| D / → | Rotate right |
+| SPACE | CAINE observes the world and thinks |
+| E | CAINE analyzes the wall in front and may interact with it |
+
+> If CAINE thinks the words "paint" and "rainbow" about a wall, it will repaint that wall with a rainbow texture in real time.
+
+**Requires:** `caine_brain/`
+
+---
+
+### 6 — Converse with Caine
+A raw GPT-2 conversation mode. Type the beginning of any thought and CAINE will complete it, using its trained language patterns.
+
+**Requires:** `caine_brain/`
+
+---
+
+### 7 — Forge Memories *(training tool)*
+Processes images from `creative_dataset/images/`, generates visual descriptions using BLIP, and sends them to Groq's LLaMA model to create CAINE's personality responses. The results are saved to `metadatas.json`, which is used for training.
+
+**Requires:** Groq API key (see [Getting a Groq API Key](#getting-a-groq-api-key)), images in `creative_dataset/images/`
+
+---
+
+### 8 — Deep Training *(training tool)*
+Fine-tunes the GPT-2 model on the `metadatas.json` file generated by Forge Memories. After training, the new model is saved to `caine_brain/`, overwriting the previous one.
+
+**Requires:** `creative_dataset/images/metadatas.json`
+
+> Training on CPU is possible but will take several hours. A NVIDIA GPU is strongly recommended.
+
+---
+
+### 9 — Feed Global Images *(training tool)*
+Searches DuckDuckGo for images related to weirdcore, surrealism, liminal spaces and similar aesthetics, and downloads them into `creative_dataset/global_images/`. Use this to expand the training dataset.
+
+---
+
+### 0 — Rename Dataset Archives *(training tool)*
+Renames all images in `creative_dataset/images/` to a standardized format (`picture_001.jpg`, `picture_002.jpg`, etc.). Run this before Forge Memories if your images have inconsistent filenames.
+
+---
+
+## Training Your Own CAINE
+
+If you want to teach CAINE a completely different personality or aesthetic, follow this pipeline:
+
+```
+[Collect images] → [Rename Archives] → [Feed Global Images]
+       ↓
+[Forge Memories]  ← requires Groq API key
+       ↓
+[Deep Training]
+       ↓
+[caine_brain/ is updated — new personality active]
+```
+
+1. Place your images in `creative_dataset/images/`
+2. Run **Rename Dataset Archives** to normalize filenames
+3. Run **Forge Memories** to generate `metadatas.json` — this teaches CAINE how to react to each image
+4. Run **Deep Training** to fine-tune GPT-2 on those reactions
+5. The new `caine_brain/` is ready — all modules will now use the new personality
+
+---
+
+## Hardware Notes
+
+### GPU Compatibility
+
+CAINE automatically detects your GPU and adjusts precision accordingly:
+
+| GPU Series | Precision Used | Notes |
 |---|---|---|
-| GPT-2 | OpenAI / HuggingFace | MIT |
-| BLIP | Salesforce | BSD-3-Clause |
-| Stable Diffusion v1-5 | RunwayML | CreativeML Open RAIL-M |
-| Llama 3.1 8B | Meta (via Groq) | Llama 3 Community License |
+| RTX 2000, 3000, 4000+ | float16 | Full speed, recommended |
+| GTX 1660, 1650, 1630 | float32 | Compatibility mode, slightly slower |
+| GTX 10xx series | float32 | Compatibility mode |
+| No GPU (CPU only) | float32 | Works, but image generation takes 5–15 minutes per image |
 
-Please review each model's license before using this project commercially.
+### VRAM Requirements
 
----
-
-## Ethics and responsible use
-
-- The image scraper (`caine_feed_global.py`) is intended for **personal and educational use only**. You are responsible for complying with the Terms of Service of any website you collect data from.
-- Generated images should not be used to deceive, impersonate, or harm anyone.
-- This project does not collect or transmit any user data.
+- **Text modules** (1, 6): minimal, works on any hardware
+- **Vision module** (2): ~1GB VRAM
+- **Image generation** (3, 4): ~4GB VRAM recommended. Works on CPU but very slowly.
+- **3D World** (5): minimal, depends on screen resolution
 
 ---
 
-## License
+## Troubleshooting
 
-MIT — do whatever you want with it, just don't blame me if Caine starts asking too many questions.
+**"No module named 'torch'"**
+Run `instalar.bat` again. If the error persists, make sure you are using `iniciar.bat` to start CAINE and not opening `caine_launcher.py` directly with a different Python version.
+
+**Images are generated completely black**
+Your GPU may not support float16. This is handled automatically in the current version — update your `caine_text_to_image.py` and `caine_complete_cycle.py` to the latest versions from this repository.
+
+**"Error loading brain" or "caine_brain not found"**
+The `caine_brain/` folder is missing or is not in the correct location. It must be in the same folder as `caine_launcher.py`. If you do not have it, you need to run the full training pipeline first.
+
+**Forge Memories fails with an API error**
+Check that your Groq API key is correctly set in `caine_f&o/forge_memories_complex.py`. Make sure there are no extra spaces or quotation marks around the key.
+
+**Python not recognized after installation**
+Close the terminal completely, open a new one, and run `iniciar.bat` again. Windows sometimes requires a fresh terminal session to recognize a newly installed Python.
+
+**Image generation is very slow**
+If you have no NVIDIA GPU, image generation runs on CPU and will take 5–15 minutes per image. This is expected. Consider running on a machine with a compatible GPU for a better experience.
+
+---
+
+*CAINE was born curious. Feed it well.*
