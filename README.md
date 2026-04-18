@@ -90,7 +90,7 @@ Download or clone this repository and extract it to any folder on your computer.
 
 **2. Run the installer**
 
-Double-click `instalar.bat`.
+Double-click `installl.bat`.
 
 This script will automatically:
 - Download and install Python 3.12 if not present
@@ -101,7 +101,7 @@ This script will automatically:
 
 **3. Start CAINE**
 
-After installation is complete, double-click `iniciar.bat` to open the main menu. You will see this menu every time you launch CAINE.
+After installation is complete, double-click `Start CAINE.bat` to open the main menu. You will see this menu every time you launch CAINE.
 
 ---
 
