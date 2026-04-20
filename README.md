@@ -35,8 +35,8 @@ The system has three core components working together:
 ```
 CAINE/
 │
-├── iniciar.bat                  ← Start CAINE (use this every time)
-├── instalar.bat                 ← Install all dependencies (run once)
+├── Start CAINE.bat                  ← Start CAINE (use this every time)
+├── install.bat                 ← Install all dependencies (run once)
 ├── caine_launcher.py            ← Main menu (called by iniciar.bat)
 │
 ├── caine.py                     ← Text prompt → CAINE responds
@@ -63,6 +63,7 @@ CAINE/
 │   └── ...
 │
 └── creative_dataset/            ← Dataset used for training (optional)
+    └── metadatas.json
     └── images/
         ├── picture_001.jpg
         ├── picture_002.jpg
