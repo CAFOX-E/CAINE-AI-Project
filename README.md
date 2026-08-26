@@ -279,7 +279,7 @@ CAINE automatically detects your GPU and adjusts precision accordingly:
 ## Troubleshooting
 
 **"No module named 'torch'"**
-Run `instalar.bat` again. If the error persists, make sure you are using `iniciar.bat` to start CAINE and not opening `caine_launcher.py` directly with a different Python version.
+Run `install.bat` again. If the error persists, make sure you are using `Start CAINE.bat` to start CAINE and not opening `caine_launcher.py` directly with a different Python version.
 
 **Images are generated completely black**
 Your GPU may not support float16. This is handled automatically in the current version — update your `caine_text_to_image.py` and `caine_complete_cycle.py` to the latest versions from this repository.
